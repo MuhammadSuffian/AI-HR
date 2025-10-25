@@ -67,11 +67,24 @@ st.markdown(
 class AIHRAssistant:
     def __init__(self):
         """Initialize  Ask HR with Supabase connection and RAG capabilities"""
-        # Supabase configuration
-        self.url = os.getenv('SUPABASE_URL', 'https://ptkqgiqqefoceswfwent.supabase.co')
-        self.key = os.getenv('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0a3FnaXFxZWZvY2Vzd2Z3ZW50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njk1NDcsImV4cCI6MjA3NDU0NTU0N30.6DU3Ahplr8tybCxBcJScd8PaPqYWXNb_Y7zSMvF3wRg')
-        
-        self.supabase: Client = create_client(self.url, self.key)
+        # Supabase configuration - prefer Streamlit secrets, then environment variables
+        try:
+            secrets_url = st.secrets.get('supa_base_url') if hasattr(st, 'secrets') else None
+            secrets_key = st.secrets.get('supa_base_ANON_KEY') if hasattr(st, 'secrets') else None
+        except Exception:
+            secrets_url = None
+            secrets_key = None
+
+        # Fallback to environment variables if Streamlit secrets not provided
+        self.url = secrets_url or os.getenv('SUPABASE_URL')
+        self.key = secrets_key or os.getenv('SUPABASE_ANON_KEY')
+
+        # Create Supabase client only if configuration is present
+        if not self.url or not self.key:
+            st.warning("Supabase configuration not found. Please set Streamlit secrets 'supa_base_url' and 'supa_base_ANON_KEY' or environment variables SUPABASE_URL and SUPABASE_ANON_KEY.")
+            self.supabase = None
+        else:
+            self.supabase: Client = create_client(self.url, self.key)
         
         # Initialize Groq client
         # Load Groq API key from Streamlit secrets (key: 'groq_api_tokken')
