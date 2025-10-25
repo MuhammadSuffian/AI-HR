@@ -74,8 +74,22 @@ class AIHRAssistant:
         self.supabase: Client = create_client(self.url, self.key)
         
         # Initialize Groq client
-        groq_api_key = "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"
-        self.groq_client = Groq(api_key=groq_api_key)
+        # Load Groq API key from Streamlit secrets (key: 'groq_api_tokken')
+        # Fallback to environment variable GROQ_API_KEY if not present in secrets
+        try:
+            groq_api_key = st.secrets.get("groq_api_tokken") if hasattr(st, 'secrets') else None
+        except Exception:
+            groq_api_key = None
+
+        if not groq_api_key:
+            groq_api_key = os.getenv('GROQ_API_KEY')
+
+        if not groq_api_key:
+            # Do not create a Groq client when the key is missing; warn in the UI
+            st.warning("Groq API key not found. Please set Streamlit secret 'groq_api_tokken' or environment variable GROQ_API_KEY.")
+            self.groq_client = None
+        else:
+            self.groq_client = Groq(api_key=groq_api_key)
         
         # Initialize RAG components
         self.embedding_model = None
