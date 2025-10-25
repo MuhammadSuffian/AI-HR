@@ -13,8 +13,6 @@ langchain
 langchain-community
 faiss-cpu
 PyPDF2
-
-langchain-community
 langchain-text-splitters
 transformers
 python-docx
