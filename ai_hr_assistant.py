@@ -166,6 +166,10 @@ class AIHRAssistant:
     
     def fetch_organizations(self) -> List[Dict[Any, Any]]:
         """Fetch all organizations data"""
+        if not getattr(self, 'supabase', None):
+            st.error("Supabase client not configured. Cannot fetch organizations.")
+            return []
+
         try:
             response = self.supabase.table('organizations').select("*").execute()
             self.organizations_data = response.data
@@ -176,6 +180,10 @@ class AIHRAssistant:
     
     def fetch_employees(self) -> List[Dict[Any, Any]]:
         """Fetch all employees data"""
+        if not getattr(self, 'supabase', None):
+            st.error("Supabase client not configured. Cannot fetch employees.")
+            return []
+
         try:
             response = self.supabase.table('employees').select("*").execute()
             self.employees_data = response.data
@@ -186,6 +194,10 @@ class AIHRAssistant:
     
     def fetch_employee_by_organization(self, org_id: int) -> List[Dict[Any, Any]]:
         """Fetch employees by organization ID"""
+        if not getattr(self, 'supabase', None):
+            st.error("Supabase client not configured. Cannot fetch employees by organization.")
+            return []
+
         try:
             response = self.supabase.table('employees').select("*").eq('organization_id', org_id).execute()
             return response.data
@@ -195,6 +207,10 @@ class AIHRAssistant:
     
     def fetch_leaves(self) -> List[Dict[Any, Any]]:
         """Fetch all leaves data"""
+        if not getattr(self, 'supabase', None):
+            st.error("Supabase client not configured. Cannot fetch leaves.")
+            return []
+
         try:
             response = self.supabase.table('leaves').select("*").execute()
             return response.data
@@ -204,6 +220,10 @@ class AIHRAssistant:
     
     def fetch_attendance(self) -> List[Dict[Any, Any]]:
         """Fetch all attendance data"""
+        if not getattr(self, 'supabase', None):
+            st.error("Supabase client not configured. Cannot fetch attendance.")
+            return []
+
         try:
             response = self.supabase.table('attendance').select("*").execute()
             return response.data
